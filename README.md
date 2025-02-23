@@ -1,1 +1,1 @@
-# Tugas-Kecil-1-Stima
+# Tugas Kecil 1 Strategi Algoritma
