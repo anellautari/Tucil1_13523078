@@ -1,0 +1,7 @@
+3 3 3
+DEFAULT
+A
+AA
+BB
+B
+CCC
