@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class IQPuzzlerPro {
+public class tes {
     public static final String RESET = "\033[38;5;0m";
     public static final String[] ANSI_COLORS = {
         "\033[38;5;196m", "\033[38;5;226m", "\033[38;5;46m", 
@@ -102,6 +102,8 @@ public class IQPuzzlerPro {
                 return;
             }
         
+            printPuzzles(allpuzzles, colorMap, outputtxt);
+        
             if (allpuzzles.isEmpty()) {
                 System.out.println("Error: Tidak ada puzzle yang terbaca dari file.");
                 return;
@@ -161,7 +163,7 @@ public class IQPuzzlerPro {
         for (int i = 0; i < line.length(); i++) {
             if (line.charAt(i) != ' ') return i;
         }
-        return -1;
+        return -1; // Semua spasi
     }
 
     private static char[][] convertToCharArray(List<String> puzzleStrings) {
@@ -178,7 +180,39 @@ public class IQPuzzlerPro {
         return puzzle;
     }
 
+    // debug
+    private static void printPuzzles(List<char[][]> allpuzzles, Map<Character, String> colorMap, StringBuilder outputtxt) {
+        System.out.println("\n=== Puzzles ===");
+        for (int i = 0; i < allpuzzles.size(); i++) {
+            //System.out.println("Puzzle " + (i + 1) + ":");
+            for (char[] row : allpuzzles.get(i)) {
+                // Cek isi row sebelum ditampilkan
+                //System.out.println(Arrays.toString(row)); // Debug: Print array as is
+                for (char c : row) {
+                    String color = colorMap.get(c); // Ambil warna dari colorMap
+                    System.out.print(color + c + "\u001B[0m"); // Warna + Huruf + Reset
+                    outputtxt.append(color + c + "\u001B[0m").append("\n");
+                }                
+                System.out.println();
+                outputtxt.append("\n");
+            }
+            //System.out.println();
+        }
+        System.out.println("=== Debug: Semua Puzzle ===");
+        for (char[][] p : allpuzzles) {
+            for (char[] row : p) {
+                System.out.println(Arrays.toString(row));
+                outputtxt.append(Arrays.toString(row)).append("\n");
+            }
+            System.out.println();
+            outputtxt.append("\n");
+        }
+
+    }    
     private static boolean solve(int index, List<char[][]> allpuzzles, char[][] board, int N, int M, Map<Character, String> colorMap, StringBuilder outputtxt) {
+        //System.out.println("Mencoba puzzle ke-" + index);
+        //printBoard(board);
+
         if (index == allpuzzles.size()) {
             if (hasEmptySpace(board,N,M)){
                 return false;
@@ -196,7 +230,7 @@ public class IQPuzzlerPro {
                 for (int k=0;k<4;k++) { // coba semua rotasi
                     char[][] rotated = rotate(puzzle,k);
                     char[][] flippedH = flipHorizontal(rotated);
-
+                    char[][] flippedV = flipVertical(rotated);
                     if (canPlace(rotated, board, i, j, N, M)) {
                         placePuzzle(rotated, board, i, j);
                         if (tryPlacement(rotated, board, i, j, N, M, index, allpuzzles, colorMap, outputtxt)) return true;
@@ -207,11 +241,17 @@ public class IQPuzzlerPro {
                         placePuzzle(flippedH, board, i, j);
                         if (tryPlacement(flippedH, board, i, j, N, M, index, allpuzzles, colorMap, outputtxt)) return true;
                         removePuzzle(flippedH, board, i, j); // Backtrack
-                    }                  
+                    }
+                    
+                    if (canPlace(flippedV, board, i, j, N, M)) {
+                        placePuzzle(flippedV, board, i, j);
+                        if (tryPlacement(flippedV, board, i, j, N, M, index, allpuzzles, colorMap, outputtxt)) return true;
+                        removePuzzle(flippedV, board, i, j); // Backtrack
+                    }                    
                 }
             }
         }
-        return false; 
+        return false; // Tidak ada solusi dari posisi ini
     }    
 
     private static boolean hasEmptySpace(char[][] board, int N, int M){
@@ -239,14 +279,18 @@ public class IQPuzzlerPro {
         for (int i=0;i<puzzle.length;i++){
             for (int j=0;j<puzzle[i].length;j++){
                 if (puzzle[i][j] != ' ' && (x+i >= N || y+j >= M || board[x+i][y+j] != '.')){
+                    //System.out.println("Tidak bisa menempatkan di (" + x + "," + y + ")");
                     return false; 
                 }
             }
         }
+        //System.out.println("Bisa menempatkan di (" + x + "," + y + ")");
         return true;
     }
 
     private static void placePuzzle (char[][] puzzle, char[][] board, int x, int y){
+        //System.out.println("Mencoba tempatkan puzzle di (" + x + "," + y + ")");
+
         for (int i=0;i<puzzle.length;i++){
             for (int j=0;j<puzzle[i].length;j++){
                 if (puzzle[i][j] != ' '){
@@ -257,6 +301,8 @@ public class IQPuzzlerPro {
     }
 
     private static void removePuzzle (char[][] puzzle, char[][] board, int row, int col){
+        //System.out.println("Menghapus puzzle dari (" + row + "," + col + ")");
+
         for (int i=0;i<puzzle.length;i++){
             for (int j=0;j<puzzle[i].length;j++){
                 if (puzzle[i][j] != ' '){
@@ -267,10 +313,20 @@ public class IQPuzzlerPro {
     }
 
     private static char[][] rotate(char[][] puzzle, int putar){
+        // if (puzzle.length == 0 || puzzle[0].length == 0) {
+        //     return puzzle; // Hindari error dengan langsung mengembalikan puzzle kosong
+        // }
+        //System.out.println("Rotating puzzle: " + puzzle.length + "x" + (puzzle.length > 0 ? puzzle[0].length : 0));
+        
         char[][] rotated = puzzle;
         for (int i=0;i<putar;i++){
+
             int row = rotated.length;
+            //if (row == 0) return puzzle;
+
             int col = rotated[0].length;
+            //if (col == 0) return puzzle;
+
             char[][] newRotated = new char[col][row];
 
             for (int j=0;j<row;j++){
@@ -292,24 +348,35 @@ public class IQPuzzlerPro {
         return flipped;
     }
 
+    private static char[][] flipVertical(char[][] puzzle){
+        int row = puzzle.length, col = puzzle[0].length;
+        char[][] flipped = new char[row][col];
+        for (int i=0;i<row;i++){
+            for (int j=0;j<col;j++){
+                flipped[i][col-j-1] = puzzle[i][j];
+            }
+        }
+        return flipped;
+    }
+
     private static void printBoard (char[][] board, Map<Character, String> colorMap, StringBuilder outputtxt){
-        String printsolusi = "\n=== Solusi Akhir ===";
-        System.out.println(printsolusi);
-        System.out.println();
-        outputtxt.append(printsolusi).append("\n");
-        outputtxt.append("\n");
+        String solusi = "\n=== Solusi Akhir ===";
+        System.out.println(solusi);
+        outputtxt.append(solusi).append("\n");
 
         for (char[] row : board){
-            StringBuilder solusi = new StringBuilder();
-            StringBuilder solusitxt = new StringBuilder();
-
+            System.out.println(Arrays.toString(row));
+            outputtxt.append(Arrays.toString(row)).append("\n");
+        }
+        System.out.println();
+        for (char[] row : board){
+            StringBuilder line = new StringBuilder();
             for (char c : row){
                 String color = colorMap.get(c);
-                solusi.append(color).append(c).append("\u001B[0m");
-                solusitxt.append(c);
+                line.append(color).append(c).append("\u001B[0m");
             }
-            System.out.println(solusi.toString());
-            outputtxt.append(solusitxt.toString()).append("\n");
+            System.out.println(line.toString());
+            outputtxt.append(line.toString()).append("\n");
         }
         System.out.println();
         outputtxt.append("\n");

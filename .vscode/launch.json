@@ -6,6 +6,14 @@
     "configurations": [
         {
             "type": "java",
+            "name": "tes",
+            "request": "launch",
+            "mainClass": "tes",
+            "projectName": "Tugas-Kecil-1-Stima_a33f9fc3",
+            "cwd": "${workspaceFolder}/src"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -16,7 +24,7 @@
             "request": "launch",
             "mainClass": "IQPuzzlerPro",
             "projectName": "Tugas-Kecil-1-Stima_a33f9fc3",
-            "cwd" : "${workspaceFolder}/src"
+            "cwd": "${workspaceFolder}/src"
         }
     ]
 }
