@@ -1,0 +1,12 @@
+
+=== Solusi Akhir ===
+
+ABBCC
+AABCD
+EEEDD
+EEFFF
+GGGFF
+
+Waktu pencarian: 39.8091 ms
+
+Banyak kasus yang ditinjau: 250298

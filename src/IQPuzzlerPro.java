@@ -34,9 +34,15 @@ public class IQPuzzlerPro {
                 return;
             }
 
-            int N = Integer.parseInt(baris1[0]);
-            int M = Integer.parseInt(baris1[1]);
-            int P = Integer.parseInt(baris1[2]);
+            int N,M,P;
+            try{
+                N = Integer.parseInt(baris1[0]);
+                M = Integer.parseInt(baris1[1]);
+                P = Integer.parseInt(baris1[2]);
+            } catch (NumberFormatException e){
+                System.out.println("N, M, atau P bukan angka valid. Silakan coba lagi.");
+                return;
+            }
 
             char[][] board = new char[N][M];
             for (int i = 0; i < N; i++) {
@@ -44,10 +50,6 @@ public class IQPuzzlerPro {
             }
 
             String S = input.readLine();
-            if (S == null) {
-                System.out.println("Error: Tidak ada string S.");
-                return;
-            }
             S = S.trim();
             System.out.println();
 
@@ -59,40 +61,35 @@ public class IQPuzzlerPro {
             List<char[][]> allpuzzles = new ArrayList<>();
             List<String> currentPuzzle = new ArrayList<>();
             
-            Character lastFirstChar = null; // Huruf pertama dari puzzle sebelumnya (bukan spasi)
+            Character lastFirstChar = null; 
 
             while (input.ready()) {
                 String line = input.readLine();
-                if (line.trim().isEmpty()) continue; // Lewati baris kosong
+                if (line.trim().isEmpty()) continue; 
 
-                // Cari huruf pertama (bukan spasi)
-                int firstCharIndex = findFirstCharIndex(line);
-                if (firstCharIndex == -1) continue; // Kalau barisnya cuma spasi, lewati
+                int firstCharIndex = findFirstChar(line);
+                if (firstCharIndex == -1) continue;
 
                 char firstChar = line.charAt(firstCharIndex);
 
-                // Kalau ini puzzle pertama, ambil huruf pertamanya
                 if (lastFirstChar == null) {
                     lastFirstChar = firstChar;
                 }
 
-                // Bandingkan huruf pertama dengan puzzle sebelumnya
                 if (firstChar == lastFirstChar) {
-                    currentPuzzle.add(line); // Masukkan ke puzzle sebelumnya
+                    currentPuzzle.add(line);
                 } else {
-                    // Simpan puzzle lama sebelum mulai yang baru
                     if (!currentPuzzle.isEmpty()) {
-                        allpuzzles.add(convertToCharArray(currentPuzzle));
+                        allpuzzles.add(convertStringtoChar(currentPuzzle));
                         currentPuzzle.clear();
                     }
                     currentPuzzle.add(line);
-                    lastFirstChar = firstChar; // Update huruf pertama puzzle baru
+                    lastFirstChar = firstChar; 
                 }
             }
 
-            // Tambahkan puzzle terakhir jika ada
             if (!currentPuzzle.isEmpty()) {
-                allpuzzles.add(convertToCharArray(currentPuzzle));
+                allpuzzles.add(convertStringtoChar(currentPuzzle));
             }
             
             input.close();
@@ -124,6 +121,7 @@ public class IQPuzzlerPro {
             outputtxt.append(waktu).append("\n");
 
             System.out.println();
+            outputtxt.append("\n");
             String totalKasus = "Banyak kasus yang ditinjau: " + totalAttempts;
             System.out.println(totalKasus);
             outputtxt.append(totalKasus).append("\n");
@@ -144,27 +142,37 @@ public class IQPuzzlerPro {
                 System.out.print("Masukkan nama file output txt: ");
                 String outputFile = scanner.nextLine();
 
-                try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(outputFile))) {
+                String outputDir = "../test"; 
+                File outputFolder = new File(outputDir);
+
+                if (!outputFolder.exists()) {
+                    outputFolder.mkdir();
+                }
+
+                String outputFilePath = outputDir + "/" + outputFile;
+
+                try (BufferedWriter outputWriter = new BufferedWriter(new FileWriter(outputFilePath))) {
                     outputWriter.write(outputtxt.toString());
-                    System.out.println("Output berhasil disimpan ke: " + outputFile);
+                    System.out.println("Output berhasil disimpan ke: " + outputFilePath);
                     System.out.println();
                 } catch (IOException e) {
                     System.out.println("Error menyimpan file: " + e.getMessage());
+                    System.out.println();
                 }
             }
             scanner.close();
-            System.out.println("Game telah selesai. Terima kasih telah bermain.");
+            System.out.println("IQPuzzlerPro telah selesai. Terima kasih telah bermain.");
         }
     }
 
-    private static int findFirstCharIndex(String line) {
+    private static int findFirstChar(String line) {
         for (int i = 0; i < line.length(); i++) {
             if (line.charAt(i) != ' ') return i;
         }
         return -1;
     }
 
-    private static char[][] convertToCharArray(List<String> puzzleStrings) {
+    private static char[][] convertStringtoChar(List<String> puzzleStrings) {
         int rows = puzzleStrings.size();
         int cols = puzzleStrings.stream().mapToInt(String::length).max().orElse(0);
         char[][] puzzle = new char[rows][cols];
@@ -185,28 +193,27 @@ public class IQPuzzlerPro {
             }
 
             printBoard(board, colorMap, outputtxt);
-            return true; // Semua puzzle sudah ditempatkan
+            return true; 
         }
     
         char[][] puzzle = allpuzzles.get(index);
-    
-        // Coba semua posisi di papan
+
         for (int i=0;i<N;i++) {
             for (int j=0;j<M;j++) {
-                for (int k=0;k<4;k++) { // coba semua rotasi
+                for (int k=0;k<4;k++) { 
                     char[][] rotated = rotate(puzzle,k);
                     char[][] flippedH = flipHorizontal(rotated);
 
                     if (canPlace(rotated, board, i, j, N, M)) {
                         placePuzzle(rotated, board, i, j);
-                        if (tryPlacement(rotated, board, i, j, N, M, index, allpuzzles, colorMap, outputtxt)) return true;
-                        removePuzzle(rotated, board, i, j); // Backtrack
+                        if (nextPuzzle(rotated, board, i, j, N, M, index, allpuzzles, colorMap, outputtxt)) return true;
+                        removePuzzle(rotated, board, i, j);
                     }
                     
                     if (canPlace(flippedH, board, i, j, N, M)) {
                         placePuzzle(flippedH, board, i, j);
-                        if (tryPlacement(flippedH, board, i, j, N, M, index, allpuzzles, colorMap, outputtxt)) return true;
-                        removePuzzle(flippedH, board, i, j); // Backtrack
+                        if (nextPuzzle(flippedH, board, i, j, N, M, index, allpuzzles, colorMap, outputtxt)) return true;
+                        removePuzzle(flippedH, board, i, j); 
                     }                  
                 }
             }
@@ -225,14 +232,13 @@ public class IQPuzzlerPro {
         return false;
     }
 
-    private static boolean tryPlacement(char[][] puzzle, char[][] board, int i, int j, int N, int M, int index, List<char[][]> allpuzzles, Map<Character, String> colorMap, StringBuilder outputtxt){
+    private static boolean nextPuzzle(char[][] puzzle, char[][] board, int i, int j, int N, int M, int index, List<char[][]> allpuzzles, Map<Character, String> colorMap, StringBuilder outputtxt){
         if (solve(index + 1, allpuzzles, board, N, M, colorMap, outputtxt)) {
             return true;
         }
-        removePuzzle(puzzle, board, i, j); // Backtrack kalau gagal
+        removePuzzle(puzzle, board, i, j); 
         return false;
     }
-
 
     private static boolean canPlace(char[][] puzzle, char[][] board, int x, int y, int N, int M){
         totalAttempts++;
@@ -299,11 +305,12 @@ public class IQPuzzlerPro {
         outputtxt.append(printsolusi).append("\n");
         outputtxt.append("\n");
 
-        for (char[] row : board){
+        for (int i = 0; i < board.length; i++){
             StringBuilder solusi = new StringBuilder();
             StringBuilder solusitxt = new StringBuilder();
 
-            for (char c : row){
+            for (int j = 0; j < board[i].length; j++){
+                char c = board[i][j];
                 String color = colorMap.get(c);
                 solusi.append(color).append(c).append("\u001B[0m");
                 solusitxt.append(c);
