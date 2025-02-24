@@ -24,5 +24,7 @@ java -cp bin IQPuzzlerPro
 
 ## Author / Identitas pembuat
 Nama : Anella Utari Gunadi
-\nNIM : 13523078
-\nKelas : K2
+
+NIM : 13523078
+
+Kelas : K2
