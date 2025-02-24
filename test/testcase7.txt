@@ -1,0 +1,11 @@
+
+=== Solusi Akhir ===
+
+JJCC
+PJCC
+PJJM
+PPMM
+
+Waktu pencarian: 1.1223 ms
+
+Banyak kasus yang ditinjau: 263

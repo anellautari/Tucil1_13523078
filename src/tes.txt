@@ -1,17 +1,11 @@
-5 5 7
+4 4 4
 DEFAULT
-A
-AA
-B
-BB
-C
+JJ
+ J
+ JJ
+  P
+PPP
 CC
-D
-DD
-EE
-EE
-E
-FF
-FF
-F
-GGG
+CC
+MM
+ M

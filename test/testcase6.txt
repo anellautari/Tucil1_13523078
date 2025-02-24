@@ -1,0 +1,13 @@
+
+=== Solusi Akhir ===
+
+ABBGG
+AABGC
+ABBCC
+EEEEC
+DDDFF
+HHDFF
+
+Waktu pencarian: 274.9237 ms
+
+Banyak kasus yang ditinjau: 4411019
