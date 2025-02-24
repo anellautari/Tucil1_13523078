@@ -1,7 +1,7 @@
 # Tugas Kecil 1 Strategi Algoritma
 
 ## IQ Puzzler Pro
-IQ Puzzler Pro adalah program untuk mencari solusi dari berbagai puzzle yang diberikan pada blok papan NxM dari inputan pengguna dengan menggunakan algoritma Brute Force dengan backtracking untuk menemukan solusi dari puzzle.
+IQ Puzzler Pro adalah program untuk mencari solusi dari berbagai puzzle yang diberikan untuk ditempatkan pada blok papan NxM hingga papan penuh dan seluruh puzzle terpakai. Ukuran papan dan informasi puzzle diambil dari inputan pengguna (.txt). Program ini menggunakan algoritma Brute Force dengan backtracking untuk menemukan solusi dari IQPuzzlerPro. Solusi dapat disimpan oleh pengguna dalam tipe file .txt dan akan tersimpan pada folder 'test'.
 
 ## Requirement Program dan Instalasi
 Untuk menjalankan program, pengguna harus menginstall Java Development Kit (JDK).
